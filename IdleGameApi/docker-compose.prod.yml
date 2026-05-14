@@ -1,8 +1,3 @@
-networks:
-  shared-db:
-    name: shared-db
-    driver: bridge
-
 volumes:
   postgres_data:
 
@@ -16,8 +11,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - shared-db
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-idlegame_user} -d ${POSTGRES_DB:-idlegame_db}"]
@@ -38,8 +31,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - shared-db
     restart: unless-stopped
 
   nginx:
@@ -53,6 +44,4 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - app
-    networks:
-      - shared-db
     restart: unless-stopped
