@@ -1,0 +1,58 @@
+networks:
+  shared-db:
+    name: shared-db
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: shared-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-idlegame_db}
+      POSTGRES_USER: ${POSTGRES_USER:-idlegame_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shared-db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-idlegame_user} -d ${POSTGRES_DB:-idlegame_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: idlegame-api
+    expose:
+      - "8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://shared-postgres:5432/${POSTGRES_DB:-idlegame_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-idlegame_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shared-db
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: idlegame-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks:
+      - shared-db
+    restart: unless-stopped

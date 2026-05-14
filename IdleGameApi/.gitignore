@@ -1,0 +1,30 @@
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### macOS ###
+.DS_Store
+
+### Log files ###
+*.log
+logs/
+
+### Spring Boot ###
+/target/
+spring-shell.log
+
+### Environment variables (本番の認証情報を含むため絶対にコミットしない) ###
+.env
