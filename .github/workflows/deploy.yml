@@ -2,7 +2,7 @@ name: Deploy API to VPS
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'IdleGameApi/**'
       - '.github/workflows/deploy.yml'
@@ -17,10 +17,11 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 2222
           script: |
             cd ~/IdleGameKotlin1
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin master
+            git reset --hard origin/master
             cd IdleGameApi
             docker compose -f docker-compose.prod.yml up -d --build
             docker image prune -f
