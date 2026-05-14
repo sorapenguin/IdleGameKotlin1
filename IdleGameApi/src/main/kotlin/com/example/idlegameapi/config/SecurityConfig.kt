@@ -26,7 +26,11 @@ class SecurityConfig(private val jwtAuthFilter: JwtAuthenticationFilter) {
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/api/auth/**", "/api/time").permitAll()
+                auth.requestMatchers(
+                    "/api/auth/**", "/api/time",
+                    "/swagger-ui/**", "/swagger-ui.html",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 auth.anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
