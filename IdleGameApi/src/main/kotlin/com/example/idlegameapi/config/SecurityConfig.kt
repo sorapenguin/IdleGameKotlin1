@@ -29,7 +29,7 @@ class SecurityConfig(private val jwtAuthFilter: JwtAuthenticationFilter) {
                 auth.requestMatchers(
                     "/api/auth/**", "/api/time",
                     "/swagger-ui/**", "/swagger-ui.html",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**", "/webjars/**"
                 ).permitAll()
                 auth.anyRequest().authenticated()
             }
